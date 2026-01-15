@@ -14,6 +14,8 @@ node_modules
 
 # Testing
 coverage
+test-results/
+playwright-report/
 
 # Turbo
 .turbo
@@ -27,6 +29,12 @@ out/
 build
 dist
 
+# Storybook
+storybook-static/
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
 
 # Debug
 npm-debug.log*
@@ -36,3 +44,8 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# IDE
+.idea/
+*.swp
+*.swo
