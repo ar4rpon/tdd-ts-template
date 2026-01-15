@@ -1,1 +1,6 @@
+# Run lint-staged for formatting and linting staged files
 pnpm lint-staged
+
+# Run type checking (uses turbo caching for speed)
+echo "Running type check..."
+pnpm check-types

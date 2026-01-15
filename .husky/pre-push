@@ -1,0 +1,3 @@
+# Run all tests before push (uses turbo caching for speed)
+echo "Running tests before push..."
+pnpm test
