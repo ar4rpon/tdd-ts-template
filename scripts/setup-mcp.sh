@@ -38,24 +38,24 @@ add_mcp_server "context7" "@upstash/context7-mcp@latest"
 echo ""
 echo "2. Sequential Thinking (Problem Solving)"
 echo "   Enables structured step-by-step analysis"
-add_mcp_server "sequential-thinking" "@anthropic/sequential-thinking-mcp@latest"
-
-# GitHub MCP (optional - requires token)
-echo ""
-echo "3. GitHub MCP (Repository Operations)"
-if [ -n "$GITHUB_TOKEN" ]; then
-    echo "   GITHUB_TOKEN detected, adding GitHub MCP..."
-    add_mcp_server "github" "@anthropic/github-mcp@latest"
-else
-    echo "   Skipping: GITHUB_TOKEN not set"
-    echo "   To add later: export GITHUB_TOKEN=your_token && claude mcp add github -- npx -y @anthropic/github-mcp@latest"
-fi
+add_mcp_server "sequential-thinking" "@modelcontextprotocol/server-sequential-thinking@latest"
 
 # Playwright MCP
 echo ""
-echo "4. Playwright MCP (Browser Automation)"
+echo "3. Playwright MCP (Browser Automation)"
 echo "   Web automation and E2E testing support"
-add_mcp_server "playwright" "@anthropic/playwright-mcp@latest"
+add_mcp_server "playwright" "@playwright/mcp@latest"
+
+# GitHub MCP (optional - requires token)
+echo ""
+echo "4. GitHub MCP (Repository Operations)"
+if [ -n "$GITHUB_TOKEN" ]; then
+    echo "   GITHUB_TOKEN detected, adding GitHub MCP..."
+    add_mcp_server "github" "@modelcontextprotocol/server-github"
+else
+    echo "   Skipping: GITHUB_TOKEN not set"
+    echo "   To add later: export GITHUB_TOKEN=your_token && claude mcp add github -- npx -y @modelcontextprotocol/server-github"
+fi
 
 echo ""
 echo "=== Setup Complete ==="

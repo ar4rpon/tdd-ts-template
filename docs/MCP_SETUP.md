@@ -12,6 +12,12 @@ MCP (Model Context Protocol) allows Claude Code to connect to external tools and
 - Browser automation
 - And more
 
+## Project MCP Configuration
+
+This project includes pre-configured MCP servers in `.claude/settings.json`.
+
+When you clone the project and run Claude Code, these MCPs will be automatically available.
+
 ## Recommended MCP Servers
 
 ### 1. Context7 (Documentation Lookup)
@@ -47,7 +53,7 @@ Enables structured, step-by-step problem solving.
 **Setup:**
 
 ```bash
-claude mcp add sequential-thinking -- npx -y @anthropic/sequential-thinking-mcp@latest
+claude mcp add sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking@latest
 ```
 
 **Usage:**
@@ -57,34 +63,14 @@ claude mcp add sequential-thinking -- npx -y @anthropic/sequential-thinking-mcp@
 "Design the architecture for a user notification system"
 ```
 
-### 3. GitHub MCP (Repository Operations)
-
-Direct interaction with GitHub repositories, issues, and PRs.
-
-**Setup:**
-
-```bash
-# Requires GitHub token
-export GITHUB_TOKEN=your_token_here
-claude mcp add github -- npx -y @anthropic/github-mcp@latest
-```
-
-**Usage:**
-
-```
-"Create a PR for the current branch"
-"List open issues labeled as bugs"
-"Check the CI status for this PR"
-```
-
-### 4. Playwright MCP (Browser Automation)
+### 3. Playwright MCP (Browser Automation)
 
 Web automation and E2E testing support.
 
 **Setup:**
 
 ```bash
-claude mcp add playwright -- npx -y @anthropic/playwright-mcp@latest
+claude mcp add playwright -- npx -y @playwright/mcp@latest
 ```
 
 **Usage:**
@@ -95,9 +81,31 @@ claude mcp add playwright -- npx -y @anthropic/playwright-mcp@latest
 "Debug why the form submission test is failing"
 ```
 
-## Configuration File
+### 4. GitHub MCP (Repository Operations) - Optional
 
-MCP servers are configured in `~/.claude.json`. Here's a complete example:
+Direct interaction with GitHub repositories, issues, and PRs.
+
+**Setup:**
+
+```bash
+# Requires GitHub token
+export GITHUB_TOKEN=your_token_here
+claude mcp add github -- npx -y @modelcontextprotocol/server-github
+```
+
+**Usage:**
+
+```
+"Create a PR for the current branch"
+"List open issues labeled as bugs"
+"Check the CI status for this PR"
+```
+
+## Configuration Files
+
+### Project-level Configuration
+
+MCP servers are pre-configured in `.claude/settings.json`:
 
 ```json
 {
@@ -105,24 +113,35 @@ MCP servers are configured in `~/.claude.json`. Here's a complete example:
     "context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp@latest"],
-      "env": {
-        "CONTEXT7_API_KEY": "your-api-key-optional"
-      }
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/sequential-thinking-mcp@latest"]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/github-mcp@latest"],
-      "env": {
-        "GITHUB_TOKEN": "your-github-token"
-      }
+      "description": "Real-time library documentation lookup"
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@anthropic/playwright-mcp@latest"]
+      "args": ["-y", "@playwright/mcp@latest"],
+      "description": "Browser automation and E2E testing"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking@latest"],
+      "description": "Structured step-by-step problem solving"
+    }
+  }
+}
+```
+
+### User-level Configuration (Optional)
+
+For additional personal MCPs, configure in `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "your-github-token"
+      }
     }
   }
 }
@@ -130,7 +149,7 @@ MCP servers are configured in `~/.claude.json`. Here's a complete example:
 
 ## Quick Setup Script
 
-Run this script to set up recommended MCP servers:
+Run this script to set up recommended MCP servers manually:
 
 ```bash
 # From project root
@@ -157,16 +176,16 @@ claude "What version of React is installed? use context7"
 "Write a Vitest test for the UserService using the latest Vitest API. use context7"
 ```
 
-### PR Review with GitHub MCP
-
-```
-"Review the changes in PR #123 and check if tests pass"
-```
-
 ### E2E Debugging with Playwright
 
 ```
 "The login E2E test is failing. Debug it with Playwright"
+```
+
+### Complex Problem Solving
+
+```
+"Help me design the authentication flow step by step"
 ```
 
 ## Troubleshooting
@@ -196,5 +215,6 @@ Ensure your `GITHUB_TOKEN` has the required scopes:
 ## Resources
 
 - [Context7 Documentation](https://context7.com/docs)
+- [Playwright MCP](https://github.com/microsoft/playwright-mcp)
 - [Claude Code MCP Guide](https://code.claude.com/docs/en/mcp)
 - [MCP Protocol Specification](https://modelcontextprotocol.io)
