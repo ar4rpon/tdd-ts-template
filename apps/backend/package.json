@@ -2,6 +2,7 @@
   "name": "backend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
@@ -28,11 +29,13 @@
     "@nestjs/testing": "^11.0.20",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@swc/core": "^1.15.8",
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.3",
     "@vitest/coverage-v8": "^3.0.7",
     "eslint": "^9.39.1",
     "typescript": "5.9.2",
+    "unplugin-swc": "^1.5.9",
     "vitest": "^3.0.7"
   }
 }
