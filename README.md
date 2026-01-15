@@ -1,135 +1,251 @@
-# Turborepo starter
+# TDD TypeScript Template
 
-This Turborepo starter is maintained by the Turborepo core team.
+TDD（テスト駆動開発）に対応したフルスタックTypeScript モノレポテンプレートです。
 
-## Using this example
+## Tech Stack
 
-Run the following command:
+- **Monorepo**: Turborepo + pnpm
+- **Backend**: NestJS + Prisma + PostgreSQL
+- **Frontend**: React + Vite + Tailwind CSS + shadcn/ui
+- **Testing**: Vitest + React Testing Library + MSW + Playwright
+- **Code Quality**: ESLint + Prettier + Husky + lint-staged
+- **Infrastructure**: Docker Compose
 
-```sh
-npx create-turbo@latest
+## Project Structure
+
+```
+tdd-ts-template/
+├── apps/
+│   ├── frontend/          # React + Vite アプリ
+│   └── backend/           # NestJS API サーバー
+├── packages/
+│   ├── database/          # Prisma スキーマ・型定義・Zodスキーマ
+│   ├── ui/                # 共有UIコンポーネント + Storybook
+│   ├── shared/            # 共有型定義・ユーティリティ
+│   ├── eslint-config/     # ESLint設定
+│   └── typescript-config/ # TypeScript設定
+├── e2e/                   # Playwright E2Eテスト
+└── docker/                # Docker設定
 ```
 
-## What's inside?
+## Getting Started
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- Node.js >= 18
+- pnpm 9.0.0
+- Docker & Docker Compose
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Installation
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+```bash
+# 依存関係をインストール
+pnpm install
 
-### Utilities
+# 環境変数ファイルを作成
+cp .env.example .env
+cp apps/backend/.env.example apps/backend/.env
 
-This Turborepo has some additional tools already setup for you:
+# PostgreSQLを起動
+docker compose up -d postgres
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+# Prisma クライアントを生成
+pnpm db:generate
+
+# データベースのマイグレーション
+pnpm db:migrate
+```
+
+### Development
+
+```bash
+# 全アプリを起動
+pnpm dev
+
+# フロントエンドのみ
+pnpm dev:frontend
+
+# バックエンドのみ
+pnpm dev:backend
+
+# Storybookを起動
+pnpm storybook
+```
+
+### Testing
+
+```bash
+# 全テストを実行
+pnpm test
+
+# ウォッチモードでテスト
+pnpm test:watch
+
+# カバレッジレポート
+pnpm test:coverage
+
+# E2Eテスト
+pnpm test:e2e
+```
+
+### Code Quality
+
+```bash
+# リント
+pnpm lint
+
+# フォーマット
+pnpm format
+
+# 型チェック
+pnpm check-types
+```
 
 ### Build
 
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+# プロダクションビルド
+pnpm build
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Apps & Packages
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Apps
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+| Name       | Port | Description                 |
+| ---------- | ---- | --------------------------- |
+| `frontend` | 3000 | React + Vite フロントエンド |
+| `backend`  | 3001 | NestJS API サーバー         |
 
-### Develop
+### Packages
 
-To develop all apps and packages, run the following command:
+| Name                      | Description                               |
+| ------------------------- | ----------------------------------------- |
+| `@repo/database`          | Prismaスキーマ・型定義・Zodスキーマ       |
+| `@repo/ui`                | 共有UIコンポーネント（Storybook付き）     |
+| `@repo/shared`            | 共有型定義・API定義・テストユーティリティ |
+| `@repo/eslint-config`     | ESLint設定                                |
+| `@repo/typescript-config` | TypeScript設定                            |
 
-```
-cd my-turborepo
+## Prisma型の共有
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+`@repo/database`パッケージでPrismaスキーマから生成される型を一元管理し、フロントエンドとバックエンドで共有します。
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+### 型の利用方法
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+```typescript
+// バックエンド: Prismaクライアントと型を使用
+import { prisma, User, PostWithAuthor } from '@repo/database';
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+const users = await prisma.user.findMany();
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+// フロントエンド: 型とZodスキーマを使用
+import { UserDTO, CreateUserSchema, PostWithAuthorDTO } from '@repo/database/schemas';
 
-### Remote Caching
+// バリデーション
+const validatedUser = CreateUserSchema.parse(formData);
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+// 共有型を使ったAPIレスポンス定義
+import { UserSchema, PostSchema, ApiResponse } from '@repo/shared/types';
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 利用可能な型
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+| カテゴリ             | エクスポート                                               |
+| -------------------- | ---------------------------------------------------------- |
+| Prisma型             | `User`, `Post`, `Tag`, `Role`                              |
+| リレーション型       | `UserWithPosts`, `PostWithAuthor`, `PostWithAuthorAndTags` |
+| Zodスキーマ          | `UserSchema`, `CreateUserSchema`, `UpdateUserSchema`       |
+| DTO型                | `UserDTO`, `CreateUserDTO`, `PostDTO`, `CreatePostDTO`     |
+| テストユーティリティ | `createMockUser()`, `createMockPost()`                     |
+
+## TDD Workflow
+
+1. **Red**: テストを書く（失敗させる）
+2. **Green**: 最小限のコードでテストを通す
+3. **Refactor**: コードを改善する
+
+### Testing Layers
+
+| Layer          | Tool         | Location                          |
+| -------------- | ------------ | --------------------------------- |
+| Unit Test      | Vitest       | `apps/*/src/**/*.spec.ts`         |
+| Component Test | Vitest + RTL | `apps/frontend/src/**/*.test.tsx` |
+| API Mock       | MSW          | `apps/frontend/src/test/mocks/`   |
+| E2E Test       | Playwright   | `e2e/tests/`                      |
+
+## Docker
+
+```bash
+# 開発用 PostgreSQL を起動
+docker compose up -d postgres
+
+# テスト用 PostgreSQL を起動（tmpfs使用）
+docker compose up -d postgres-test
+
+# 停止
+docker compose down
+
+# ボリュームも削除
+docker compose down -v
+```
+
+## Git Hooks
+
+- **pre-commit**: lint-staged（ESLint + Prettier）
+- **commit-msg**: commitlint（コミットメッセージ検証）
+
+## Commit Convention
+
+このプロジェクトでは[Conventional Commits](https://www.conventionalcommits.org/)に基づくコミットメッセージ規約を採用しています。
+
+詳細は [.github/COMMIT_CONVENTION.md](.github/COMMIT_CONVENTION.md) を参照してください。
+
+### フォーマット
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+<prefix>: <subject>
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+[body]
+
+[footer]
 ```
 
-## Useful Links
+### Prefix一覧
 
-Learn more about the power of Turborepo:
+| Prefix     | 用途                               |
+| ---------- | ---------------------------------- |
+| `feat`     | 新機能の追加                       |
+| `fix`      | バグ修正                           |
+| `docs`     | ドキュメントのみの変更             |
+| `style`    | コード動作に影響しないスタイル変更 |
+| `refactor` | バグ修正・機能追加以外のコード変更 |
+| `perf`     | パフォーマンス改善                 |
+| `test`     | テストの追加・修正                 |
+| `chore`    | ビルド・ツール・依存関係の変更     |
+| `ci`       | CI/CD設定の変更                    |
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+### 例
+
+```bash
+# 良い例
+feat: ユーザープロフィール編集機能を追加
+fix: ログイン時のセッション切れを修正
+refactor: 認証ロジックを共通化
+
+# 悪い例
+update
+fix bug
+修正した
+```
+
+## AI Tool Support
+
+このプロジェクトはClaude CodeとGitHub Copilotの両方でコミットメッセージ規約をサポートしています。
+
+| ファイル                          | 用途                                     |
+| --------------------------------- | ---------------------------------------- |
+| `.github/COMMIT_CONVENTION.md`    | 共通ルール定義（Single Source of Truth） |
+| `CLAUDE.md`                       | Claude Code用プロジェクト設定            |
+| `.github/copilot-instructions.md` | GitHub Copilot用指示                     |
+| `commitlint.config.js`            | commitlintによるバリデーション           |
