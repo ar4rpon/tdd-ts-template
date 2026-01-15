@@ -192,8 +192,53 @@ docker compose down -v
 
 ## Git Hooks
 
-- **pre-commit**: lint-staged（ESLint + Prettier）
-- **commit-msg**: commitlint（コミットメッセージ検証）
+Huskyによるコミット/プッシュ時の自動検証を設定しています。
+
+### フック一覧
+
+| フック       | タイミング | 実行内容                                     |
+| ------------ | ---------- | -------------------------------------------- |
+| `pre-commit` | コミット前 | lint-staged（ESLint + Prettier）→ 型チェック |
+| `commit-msg` | コミット時 | commitlint（Conventional Commit形式の検証）  |
+| `pre-push`   | プッシュ前 | 全テスト実行                                 |
+
+### 動作フロー
+
+```
+git commit
+  │
+  ├─[pre-commit]
+  │   1. lint-staged: ステージングされたファイルをESLint + Prettierで整形
+  │   2. pnpm check-types: 全パッケージの型チェック（turboキャッシュで高速）
+  │
+  └─[commit-msg]
+      commitlint: コミットメッセージ形式を検証
+  │
+  ▼
+コミット完了
+
+git push
+  │
+  └─[pre-push]
+      pnpm test: 全テスト実行（turboキャッシュで高速）
+  │
+  ▼
+プッシュ完了
+```
+
+### フックのスキップ
+
+緊急時や一時的にフックをスキップする場合：
+
+```bash
+# コミット時のフックをスキップ
+git commit --no-verify -m "message"
+
+# プッシュ時のフックをスキップ
+git push --no-verify
+```
+
+> **Note**: `--no-verify`の使用は最小限に留め、CIで検証が行われることを確認してください。
 
 ## Commit Convention
 
