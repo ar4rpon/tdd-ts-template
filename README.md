@@ -190,6 +190,26 @@ docker compose down
 docker compose down -v
 ```
 
+## Deployment
+
+本番環境へのデプロイメント構成:
+
+| コンポーネント | デプロイ先              | 方式                  |
+| -------------- | ----------------------- | --------------------- |
+| Frontend       | Cloudflare Pages        | Git連携で自動デプロイ |
+| Backend        | VPS + Coolify           | Docker + Webhook      |
+| Database       | VPS または マネージドDB | Docker Compose        |
+
+詳細なセットアップ手順は [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) を参照してください。
+
+### Quick Overview
+
+```
+GitHub (push to main)
+├── Frontend → Cloudflare Pages（自動ビルド・CDN配信）
+└── Backend  → GitHub Actions → Docker → Coolify（VPS）
+```
+
 ## Git Hooks
 
 Huskyによるコミット/プッシュ時の自動検証を設定しています。
