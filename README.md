@@ -241,7 +241,9 @@ fix bug
 
 ## AI Tool Support
 
-このプロジェクトはClaude CodeとGitHub Copilotの両方でコミットメッセージ規約をサポートしています。
+このプロジェクトはClaude CodeとGitHub Copilotを最大限活用するための設定を含んでいます。
+
+### 設定ファイル
 
 | ファイル                          | 用途                                     |
 | --------------------------------- | ---------------------------------------- |
@@ -249,3 +251,78 @@ fix bug
 | `CLAUDE.md`                       | Claude Code用プロジェクト設定            |
 | `.github/copilot-instructions.md` | GitHub Copilot用指示                     |
 | `commitlint.config.js`            | commitlintによるバリデーション           |
+
+### AI Agent Skills
+
+プロジェクト固有のSkillsが`.claude/skills/`と`.github/skills/`に定義されています。
+
+| Skill                        | 発動条件                    | 機能                               |
+| ---------------------------- | --------------------------- | ---------------------------------- |
+| `tdd-workflow`               | TDD、テストファーストと言及 | Red-Green-Refactorサイクルをガイド |
+| `vitest-testing`             | テスト作成、カバレッジ改善  | Vitestテストパターンを提供         |
+| `generating-commit-messages` | コミット作成時              | 規約に沿ったコミットメッセージ生成 |
+| `pr-review`                  | PRレビュー依頼時            | コードレビューチェックリスト適用   |
+
+#### 使用例
+
+```bash
+# TDDでの機能実装（tdd-workflow Skillが発動）
+"ユーザー登録機能をTDDで実装して"
+
+# テスト作成（vitest-testing Skillが発動）
+"UserServiceのユニットテストを書いて"
+
+# PRレビュー（pr-review Skillが発動）
+"このブランチの変更をレビューして"
+
+# コミット作成（generating-commit-messages Skillが発動）
+"変更をコミットして"
+```
+
+### MCP Servers
+
+MCPサーバーを使用することで、Claude Codeの機能を拡張できます。
+
+#### セットアップ
+
+```bash
+# 推奨MCPサーバーを一括セットアップ
+./scripts/setup-mcp.sh
+
+# または個別にセットアップ
+claude mcp add context7 -- npx -y @upstash/context7-mcp@latest
+```
+
+#### 推奨MCPサーバー
+
+| サーバー            | 機能             | 使用例                                          |
+| ------------------- | ---------------- | ----------------------------------------------- |
+| Context7            | ドキュメント参照 | `"Prismaのトランザクション使い方 use context7"` |
+| Sequential Thinking | 構造化思考       | `"この問題をステップバイステップで解決して"`    |
+| GitHub              | リポジトリ操作   | `"PR #123のステータスを確認"`                   |
+| Playwright          | ブラウザ自動化   | `"E2Eテストをデバッグして"`                     |
+
+#### MCP使用例
+
+```bash
+# 最新ドキュメントを参照してコード生成
+"NestJSのGuardを作成して。use context7"
+
+# ライブラリの使い方を確認
+"React Query v5でのmutationの書き方は？use context7"
+
+# 複雑な問題の分析
+"認証フローのバグを段階的に調査して"
+
+# E2Eテストのデバッグ
+"ログインテストが失敗している原因を調べて"
+```
+
+詳細は [docs/MCP_SETUP.md](docs/MCP_SETUP.md) を参照してください。
+
+### ベストプラクティス
+
+1. **TDD開発**: 新機能実装時は「TDDで」と指示するとSkillが発動
+2. **ドキュメント参照**: ライブラリAPIを使う際は「use context7」を追加
+3. **コードレビュー**: PR作成前に「レビューして」でセルフチェック
+4. **コミット**: 変更後は「コミットして」で規約に沿ったメッセージ生成
